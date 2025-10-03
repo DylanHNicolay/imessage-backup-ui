@@ -1,12 +1,12 @@
 # imessage-backup
 ![Tests](https://github.com/joeylemon/imessage-backup/workflows/Tests/badge.svg)
 
-Backup all messages (including attachments) from an iPhone to free up space while allowing you to retain all of your conversation history. This script provides the ability to extract messages from your phone and store them freely in a zip file. This zip file can be later viewed in a companion web app (_not yet implemented_) so you never lose access to your old messages.
+Backup all messages (including attachments) from an iPhone to free up space while allowing you to retain all of your conversation history. This script provides the ability to extract messages from your phone and store them freely in a zip file. This zip file can be later viewed in a companion web app or as a static HTML website.
 
 ## Usage
 
 ```
-usage: main.py [-h] [-o OUT] input
+usage: main.py [-h] [-o OUT] [--html] input
 
 Backup messages from an iPhone
 
@@ -16,6 +16,7 @@ positional arguments:
 optional arguments:
   -h, --help         show this help message and exit
   -o OUT, --out OUT  the name of the output file
+  --html             create an HTML website from the backup
 ```
 
 ### Get started
@@ -53,4 +54,17 @@ backup.zip
 The `chats/` directory contains files representing every conversation on your phone, with information including the title, the participants, and all the messages ever received in it. All messages that were sent with attachments contain the path to the attachment stored in the `backup.zip` file.
 
 ## Viewing Stored Messages
-_This functionality has not yet been implemented._
+You can create a static HTML website to view your messages by using the `--html` flag:
+
+```
+> python main.py "E:\Users\Joey\Apple\MobileSync\Backup\12345678-000919512230001E" -o backup.zip --html
+```
+
+This will create a directory named `backup` (the same name as your zip file without the extension) containing an HTML website that you can view in your browser. Open the `index.html` file to start browsing your messages.
+
+The website features:
+- A list of all your conversations, sorted by date
+- Search functionality to find specific chats
+- Individual chat pages showing the full conversation history
+- Display of images and other attachments
+- Mobile-friendly responsive design

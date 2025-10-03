@@ -10,14 +10,16 @@ import tempfile
 import time
 import phonenumbers
 import utils
+from html_creator import HtmlCreator
 
 
 class BackupTool:
     """Take an iPhone backup directory and generate an archive file with the backed up messages."""
 
-    def __init__(self, in_dir: str, out_file: str) -> None:
+    def __init__(self, in_dir: str, out_file: str, create_html: bool = False) -> None:
         self.in_dir = in_dir
         self.out_file = out_file
+        self.create_html = create_html
 
         # Apple stores sqlite database files in the backup directory
         self._messages_db_file = Path(in_dir, "3d", "3d0d7e5fb2ce288813306e4d4636395e047a3d28")
@@ -79,11 +81,20 @@ class BackupTool:
                 with open(Path(chats_dir, f"chat_{chat.id}.json"), "w") as f:
                     f.write(json.dumps(chat.to_dict(chat_messages, contacts), indent=4))
 
+            # Create HTML website if requested
+            if self.create_html:
+                html_dir = Path(self.out_file).with_suffix('')
+                if html_dir.exists():
+                    shutil.rmtree(html_dir)
+                
+                html_creator = HtmlCreator(temp_dir, html_dir)
+                html_creator.create_website()
+
             # Build the .zip file of the backup data
             archive_out = Path(self.out_file)
             print(f"Creating archive at {archive_out}. This may take a long time.")
             start_time = time.time()
-            shutil.make_archive(archive_out.with_suffix(''), "zip", temp_dir)
+            shutil.make_archive(str(archive_out.with_suffix('')), "zip", temp_dir)
             print(f"Created {archive_out.stat().st_size / 1e+9:.1f}GB archive in {(time.time() - start_time) / 60:.2f} minutes.")
         except sqlite3.DatabaseError as e:
             if "file is not a database" in str(e):
@@ -129,10 +140,10 @@ class Message():
 
         return filepath
 
-    def get_attachment_dest_filename(self) -> Path:
+    def get_attachment_dest_filename(self) -> str:
         """ Find the filename where the attachment will be stored. """
         if self.attachment_path is None:
-            return None
+            return ""
 
         return '-'.join(self.attachment_path.split('/')[-2:])
 

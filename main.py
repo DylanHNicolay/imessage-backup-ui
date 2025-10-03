@@ -21,6 +21,8 @@ def get_args() -> argparse.Namespace:
         "input", help="the directory path containing the iPhone backup")
     parser.add_argument(
         "-o", "--out", help="the name of the output file", default="out.zip")
+    parser.add_argument(
+        "--html", help="create an HTML website from the backup", action="store_true")
 
     args = parser.parse_args()
 
@@ -44,5 +46,5 @@ def get_args() -> argparse.Namespace:
 
 if __name__ == "__main__":
     args = get_args()
-    tool = BackupTool(args.input, args.out)
+    tool = BackupTool(args.input, args.out, args.html)
     tool.run()
